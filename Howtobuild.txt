@@ -1,0 +1,93 @@
+1.Setup Ubuntu Linux
+Install the Ubuntu 13.10 64bit.
+It can be either on your computer itself or the virtual machine.
+You need to have at least 1GB RAM + 4GB swap. Search in the google how to set up the swap file.
+You need to have at least 70GB HDD space per the roms you wish to build.
+Update the Ubuntu and configure it as you wish.
+
+The build speed depends on "HDD(SSD) random read/write speed" >>>>> "RAM capacity" >>> "CPU cores" > "Other hardware specs".
+The ccache will speed up the builds more than 10x.
+Building on virtual machine slows down the build a bit.
+
+2.Install the needed files
+Open up the "Terminal Emulator" app in Ubuntu and type the following command.You will be prompted for your user password so type it and press the enter key.
+sudo apt-get install qt4-dev-tools bison build-essential curl flex git-core gnupg gperf libesd0-dev libncurses5-dev libsdl1.2-dev libwxgtk2.8-dev libxml2 libxml2-utils lzop pngcrush schedtool squashfs-tools xsltproc zip zlib1g-dev g++-multilib gcc-multilib lib32ncurses5-dev lib32readline-gplv2-dev lib32z1-dev
+
+When finished, type the following command. This will delete the buggy OpenJDK.
+sudo apt-get purge openjdk*
+
+Then install Java 6 by typing these commands. Press enter key every time after the each line is inputted.
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update     
+sudo apt-get install oracle-java6-installer
+
+Then type these to make new folders.
+mkdir -p ~/bin
+mkdir -p ~/android/cm11.0
+
+You have to install repo. Type these commands.
+curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+x ~/bin/repo
+gedit .bashrc
+
+Then the gedit text editor will open up. Add following lines at the end of the file. Then save it and exit gedit.
+export PATH=~/bin:$PATH
+export USE_CCACHE=1
+
+Type these commands to set up your git username and e-mail adress.
+git config --global user.email "your@email.address"
+git config --global user.name "Your Name"
+
+3.Downloading the sourcecode
+This step will take several hours.
+Restart  your computer.
+
+Type this command to move to your build directory.
+cd ~/android/cm11.0
+
+Enter the following to initialize your repo.
+repo init -u git://github.com/CyanogenMod/android.git -b cm-11.0
+
+Enter the following to download the repo. It is over 20GB.
+repo sync -j20
+
+Enter the following to download the source code for G2 international D802. It will download the kernel files needed for the L-01F. It is about 600MB.
+source build/envsetup.sh
+breakfast d802
+
+Enter the following to get some more prebuilt apps.
+cd ~/android/cm11.0/vendor/cm
+./get-prebuilts
+croot
+
+Now copy the "kernel" and the "device" folders in this zip file, to the /android/cm11.0/. Overwrite anything.
+
+4.Pulling the proprietary files from your phone.
+Set up the adb and connect your phone to the Ubuntu. Search in google how to do it.
+Instead you can copy the "bin" "etc" "lib" "vendor" directories to the ~/android/cm11.0/vendor/lge/l01f/proprietary.
+You have to pull the files from the D802 cyanogenmod.
+
+Enter the following to pull the needed files.
+~/android/cm11.0/device/lge/l01f/extract-files.sh
+
+Enter the following to limit the cache size to 10GB.
+~/android/cm11.0/prebuilts/misc/linux-x86/ccache/ccache -M 10G
+~/android/cm11.0/prebuilts/misc/linux-x86/ccache/ccache -F 0
+
+5.Building
+You need to do this step every time you build.
+
+Update and reboot your Ubuntu.
+Open "Terminal Emulator"app in Ubuntu and enter the following.
+cd ~/android/cm11.0/
+repo sync
+source build/envsetup.sh
+lunch cm_l01f-userdebug
+mka clobber
+mka bacon
+
+The build will need several hours.
+The zipped rom and the cwm recoveryimage can be found on ~/android/cm11.0/out/target/product/l01f/
+
+
+make ARCH=arm CROSS_COMPILE=../../../prebuilts/gcc/linux-x86/arm/arm-eabi-4.7/bin/arm-eabi- -j10
