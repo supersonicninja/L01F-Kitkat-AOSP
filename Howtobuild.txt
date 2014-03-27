@@ -86,7 +86,7 @@ lunch cm_l01f-userdebug
 mka clobber
 mka bacon
 
-The build will need several hours.
+The build will take several hours.
 The zipped rom and the cwm recoveryimage can be found on ~/android/cm11.0/out/target/product/l01f/
 
 
