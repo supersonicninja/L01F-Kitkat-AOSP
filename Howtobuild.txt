@@ -89,5 +89,20 @@ mka bacon
 The build will take several hours.
 The zipped rom and the cwm recoveryimage can be found on ~/android/cm11.0/out/target/product/l01f/
 
+6.Options
+Building SlimRom
+"mkdir -p ~/android/slim"
+"cd ~/android/slim"
+"repo init -u git://github.com/SlimRoms/platform_manifest.git -b kk4.4-caf"
+"repo sync"
+"source build/envsetup.sh"
+"breakfast d802"
+Overwrite files with the slim folder.
+Copy android/cm11.0/vendor/lge/l01f/proprietary to android/slim/vendor/lge/l01f/proprietary.
+"lunch slim_l01f-userdebug"
+"mka clobber"
+"mka bacon"
+
+
 
 make ARCH=arm CROSS_COMPILE=../../../prebuilts/gcc/linux-x86/arm/arm-eabi-4.7/bin/arm-eabi- -j10
